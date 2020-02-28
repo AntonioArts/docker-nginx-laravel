@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# check if dir provided
+if [ ! "$1" ]; then
+    echo "Error: Project directory is not specified\nSyntax: ./install.sh <dir>"
+    exit 1
+fi
+
 # install laravel installer
 composer global require laravel/installer
 
