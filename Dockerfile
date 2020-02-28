@@ -11,16 +11,16 @@ RUN apk update && apk add --no-cache --update php7 php7-dev php7-bcmath php7-int
  php7-xdebug php7-session nghttp2-dev nginx supervisor curl composer
 
 # Copy nginx config
-COPY config/nginx.conf /etc/nginx/nginx.conf
+COPY config/docker/nginx.conf /etc/nginx/nginx.conf
 # Remove default server definition
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Copy PHP-FPM config
-COPY config/fpm-pool.conf /etc/php7/php-fpm.d/www.conf
-COPY config/php.ini /etc/php7/conf.d/custom.ini
+COPY config/docker/fpm-pool.conf /etc/php7/php-fpm.d/www.conf
+COPY config/docker/php.ini /etc/php7/conf.d/custom.ini
 
 # Copy supervisord config
-COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY config/docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Make sure files/folders are accessable for nobody user
 RUN chown -R nobody.nobody /run && \
@@ -37,20 +37,17 @@ COPY --chown=nobody . /var/www/html
 # Add application
 WORKDIR /var/www/html
 
-# Create internal filesstem
-RUN mkdir -p storage/app/public/images
-RUN mkdir -p storage/app/public/images/customers
-RUN mkdir -p storage/app/public/images/inventories
-
 # Make sure files/folders are accessable for nobody user
-RUN chown -R nobody.nobody storage/app/public/images && \ 
+RUN chown -R nobody.nobody storage/app/public && \ 
     chown -R nobody.nobody bootstrap/cache
 
 # Create composer folder
 RUN mkdir -p /.composer
+RUN mkdir -p vendor
 
 # Make sure files/folders are accessable for nobody user
 RUN chown -R nobody.nobody /.composer
+RUN chown -R nobody.nobody vendor
 
 # Switch to nobody, user from base image
 USER nobody
